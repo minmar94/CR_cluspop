@@ -19,8 +19,8 @@ datJS.y.aug = rbind(as.matrix(datJS.y),matrix(rep(0,nzeros*T.y),ncol=T.y)) #augm
 source("fun.R") #load the script which contains the functions for CR model fitting via JAGS
 
 n.chains = 2  #number of parallel chains
-n.sample = 1e5  #number of total iterations per chain (including burn in)
-n.burnin = 5e4  #length of burn in (i.e. number of iterations to discard at the beginning)
+n.sample = 5e4  #number of total iterations per chain (including burn in)
+n.burnin = 2.5e4  #length of burn in (i.e. number of iterations to discard at the beginning)
 thin.rate = 2 #thinning rate 
 
 #I) classical JS model (Royle and Dorazio, 2008) with homogeneous detection and survival
