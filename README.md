@@ -11,7 +11,7 @@
 
      d) _RPT.txt_: RPT parsimonious model for characterising a population such as the one described in the 'Motivation' of the paper.
 
- 2) **simulations** containing an $\texttt{R}$ script for carrying out the simulation study of settings A and B. The two RData files contain tables which summarises the main characteristics of each scenario.
+ 2) **simulations** containing an $\texttt{R}$ script for carrying out the simulation study of settings A, B and C. The three RData files contain tables which summarises the main characteristics of each scenario.
 
  3) **realdata** containing the $\texttt{R}$ script for preparing and fitting JS-type models to Bottlenose dolphins' real data ("dolphin_4years.csv").
 
