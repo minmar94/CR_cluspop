@@ -64,8 +64,75 @@ sim.JSpmix = function(M.simul,T.simul,J.simul,G,rho,p,phi,w,nzeros){
   
 }
 
+#2) function for simulating from the Pledger et al. (2003)'s model
+#   with G class-specific couple of parameters (p1,phi1),...,(pG,phiG) 
+#   and weights, w1,...,wG, for the G components of the mixture.
+#   Detection and survival probabilities are sorted in increasing order (i.e. p1<...<pG and phi1<...<phiG).
 
-#2) function for simulating from RPT model:
+sim.JSphipmix = function(M.simul,T.simul,J.simul,G,rho,p,phi,w,nzeros){
+  
+  if(is.unsorted(p)){  #detection probabilities sorted by increasing order
+    p=sort(p)
+  }
+  
+  if(is.unsorted(phi)){  #survival probabilities sorted by increasing order
+    phi=sort(phi)
+  }
+  
+  ##latent variables
+  
+  clust=sample(1:G,size = M.simul,replace = T,prob = w) #class labels
+  
+  r=matrix(NA,nrow = M.simul,ncol = T.simul)   
+  z=r                                   
+  
+  r[,1]=rep(1,M.simul)  #individual recruitability (binary variable)
+  z[,1]=rbinom(M.simul,1,rho[1])  #individual belonging to the population (binary variable)
+  
+  for(i in 1:M.simul){
+    for(t in 2:T.simul){
+      r[i,t]=min(r[i,t-1],1-z[i,t-1])
+      z[i,t]=rbinom(1,1,phi[clust[i]]*z[i,t-1]+rho[t]*r[i,t])
+    }
+  }
+  
+  ##derived parameters
+  
+  N=colSums(z) #population size at time t
+  
+  ind=ifelse(rowSums(z)>0,T,F)  #individual belonging to the superpopulation (binary variable)
+  
+  Nsuper=sum(ind)  #superpopulation size
+  
+  
+  ##augmented data
+  
+  y.sim=matrix(NA,nrow = M.simul,ncol = T.simul)  #matrix of the simulated data (frequency of detection of individual i at period t)
+  
+  for (i in 1:M.simul) {
+    for (t in 1:T.simul) {
+      y.sim[i,t]=rbinom(1,J.simul[t],p[clust[i]]*z[i,t])
+    }
+  }
+  
+  ind.observed=rowSums(y.sim)>0  #observed individual (binary variable)
+  
+  y.obs=y.sim[ind.observed,] #matrix of the observed data 
+  D=nrow(y.obs)        #number of distinct observed individuals
+  
+  y=rbind(y.obs,matrix(rep(0,nzeros*T.simul),ncol=T.simul)) #augmented data matrix
+  M=nrow(y) #number of detection histories in the augmented data matrix
+  
+  return(list(M.simul=M.simul,M=M,T.simul=T.simul,J.simul=J.simul,G=G,
+              rho=rho,p=p,phi=phi,w=w,
+              z=z,r=r,y=y,y.obs=y.obs,y.sim=y.sim,clust=clust,
+              N=N,Nsuper=Nsuper,
+              D=D,ind=ind,ind.observed=ind.observed))
+  
+}
+
+
+#3) function for simulating from RPT model:
 #   residents have higher detection and survival probabilities;
 #   transients have lower detection and survial probabilities;
 #   part-times have the same detection as transients and the same survival as residents
