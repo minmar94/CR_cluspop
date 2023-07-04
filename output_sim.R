@@ -1,7 +1,7 @@
 # Packages
 packs <- c("tidyverse", "magrittr", "pROC", "overlapping", "HDInterval", "Rfast2")
 load_packs <- sapply(packs, require, character.only = T)
-if(!any(load_packs)) install.packages(packs[!load_packs])
+if(any(load_packs==F)) install.packages(packs[!load_packs])
 load_packs <- sapply(packs, require, character.only = T)
 
 # Auxiliary functions -----------------------------------------------------
